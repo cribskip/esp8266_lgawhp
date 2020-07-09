@@ -6,3 +6,6 @@ Bridge for 2018+ R32 LG Air/Water-Heat pumps. See https://www.lg.com/de/business
 # Hardware
 
 # Usage
+
+# Outlook
+1. Simulate PENKTH000 to leverage power usage control
