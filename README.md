@@ -2,8 +2,10 @@
 Bridge for 2018+ R32 LG Air/Water-Heat pumps. See https://www.lg.com/de/business/monobloc for more information on the unit.
 
 # About
+Based on the results from https://github.com/hww3/LG_Aircon_MQTT_interface
 
 # Hardware
+Same as https://github.com/hww3/LG_Aircon_MQTT_interface
 
 # Usage
 
