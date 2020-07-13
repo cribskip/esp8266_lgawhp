@@ -10,7 +10,8 @@ Same as https://github.com/hww3/LG_Aircon_MQTT_interface
 # Usage
 
 # Outlook
-1. Simulate PENKTH000 to leverage power usage control
+1. Complete documentation / usage
+2. Simulate PENKTH000 to leverage power usage control
 
 # LG AWHP Protocol
 ## Glossary
