@@ -10,8 +10,8 @@ Same as https://github.com/hww3/LG_Aircon_MQTT_interface
 # Usage
 
 # Outlook
-1. Complete documentation / usage
-2. Simulate PENKTH000 to leverage power usage control
+1. Simulate PENKTH000 to leverage power usage control
+2. Complete documentation / usage
 
 # LG AWHP Protocol
 ## Glossary
@@ -36,6 +36,12 @@ Abbrev | Meaning
 x0 | 22 | 02 | 08 | 00 | 19 | 00 | 00 | 14 | 2D | 00 | 17 | 11 | 26 | C0 | 00 | 06 | 40 | 00 | 2F
 SRC | MODE1 | MODE2 | MODE3 | MODE4 | **UNK** | **UNK** | **UNK** | Water_target | DHW_target | **UNK** | Water_In | Water_Out | DHW | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | ChSum
 
+### Energy monitoring
+00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+C6 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 0B | B8 | 00 | 00 | 00 | 00 | D0 | 07 | 00 | 35
+SRC | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | Unit limit | Unit limit | **UNK** | **UNK** | **UNK** | **UNK** | 30010 | 30010 | **UNK** | ChSum
+
 ### Unknown
 00 | 01
 --- | ---
@@ -43,12 +49,6 @@ x5 |
 x6 | 01
 x6 | 02
 x6 | 03
-
-### Energy monitoring
-00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19
---- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-C6 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 00 | 0B | B8 | 00 | 00 | 00 | 00 | D0 | 07 | 00 | 35
-SRC | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | Unit limit | Unit limit | **UNK** | **UNK** | **UNK** | **UNK** | 30010 | 30010 | **UNK** | ChSum
 
 # LG PENKTH000 Modbus
 ## General
