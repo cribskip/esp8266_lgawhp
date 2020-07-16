@@ -60,6 +60,7 @@ SRC | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UNK** | **UN
   - https://npulse.net/en/online-modbus
   - https://www.modbustools.com/modbus_slave.html
   - https://www.mikrocontroller.net/topic/500056
+  - https://www.scadacore.com/tools/programming-calculators/online-hex-converter/
   
 ## Registers
 
