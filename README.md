@@ -8,6 +8,7 @@ Based on the results from https://github.com/hww3/LG_Aircon_MQTT_interface
 ## esp8266_lgawhp
 Same as https://github.com/hww3/LG_Aircon_MQTT_interface
 ![Arduino Layout](https://github.com/ahuxtable/LG_Aircon_MQTT_interface/raw/master/Circuit_diagram_bb.png)
+![esp8266_lgawhp](https://github.com/cribskip/esp8266_lgawhp/blob/master/gallery/esp8266_lgawhp.jpg)
 
 ## PENKTH000 emulator
 ![PENKTH000 emulator](https://github.com/cribskip/esp8266_lgawhp/blob/master/gallery/PENKTH000%20emulator.jpg)
