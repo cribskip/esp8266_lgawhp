@@ -5,7 +5,13 @@ Bridge for 2018+ R32 LG Air/Water-Heat pumps. See https://www.lg.com/de/business
 Based on the results from https://github.com/hww3/LG_Aircon_MQTT_interface
 
 # Hardware
+## esp8266_lgawhp
 Same as https://github.com/hww3/LG_Aircon_MQTT_interface
+![Arduino Layout](https://github.com/ahuxtable/LG_Aircon_MQTT_interface/raw/master/Circuit_diagram_bb.png)
+
+## PENKTH000 emulator
+![PENKTH000 emulator](https://github.com/cribskip/esp8266_lgawhp/blob/master/gallery/PENKTH000%20emulator.jpg)
+![working](https://github.com/cribskip/esp8266_lgawhp/blob/master/gallery/PENKTH000%20emulator%20in%20use.jpg)
 
 # Usage
 
