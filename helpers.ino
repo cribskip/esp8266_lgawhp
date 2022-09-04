@@ -1,6 +1,9 @@
 void _yield() {
   yield();
-  mqtt.loop();
+  if (state.sent) mqtt.loop();
+  yield();
+  httpServer.handleClient();
+  yield();
 
 #if PENKTH000
   yield();
@@ -14,7 +17,7 @@ void hardreset() {
   while (1) {};
 }
 
-void pubMsg(CircularBuffer<uint8_t, 20> &arr) {
+void pubMsg_Arr(uint8_t* arr) {
   String msg;
 
   for (uint8_t i = 0; i < 20; i++) {
@@ -27,7 +30,7 @@ void pubMsg(CircularBuffer<uint8_t, 20> &arr) {
   PUB("AWHP/msg", msg.c_str());
 }
 
-void pubMsg(uint8_t* arr) {
+void pubMsg_Circ(CircularBuffer<uint8_t, 20> &arr) {
   String msg;
 
   for (uint8_t i = 0; i < 20; i++) {
@@ -61,5 +64,5 @@ uint8_t calcCRC() {
   unsigned int _txsum = 0;
 
   for (uint8_t i = 0; i < 19; i++) _txsum += Q_out[i];
-  return  _txsum ^ 0x55 & 0xFF;
+  return  _txsum ^ (0x55 & 0xFF);
 }

@@ -18,7 +18,7 @@ void callback(char* p_topic, byte * p_payload, unsigned int p_length) {
       uint8_t reg = topic.substring(13).toInt();
       uint8_t val = payload.toInt();
 
-      Q_ovr[reg] = val;
+      Q_out[reg] = val;
       state.sent = false;
     }
   } else if (topic.startsWith("AWHP/set/")) {
@@ -30,7 +30,7 @@ void callback(char* p_topic, byte * p_payload, unsigned int p_length) {
       else if (payload.equals("Heat")) newmode = 0x32;
       else if (payload.equals("AI")) newmode = 0x2E;
 
-      Q_ovr[1] = newmode;
+      Q_out[1] = newmode;
       state.sent = false;
     } else if (topic.endsWith("DHW")) {
       uint8_t newmode = Q_out[3];
@@ -38,7 +38,7 @@ void callback(char* p_topic, byte * p_payload, unsigned int p_length) {
       if (payload.equals("OFF")) newmode = bitClear(newmode, 7);
       else if (payload.equals("ON")) newmode = bitSet(newmode, 7);
 
-      Q_ovr[3] = newmode;
+      Q_out[3] = newmode;
       state.sent = false;
     } 
      else if (topic.endsWith("Silent")) {
@@ -47,8 +47,10 @@ void callback(char* p_topic, byte * p_payload, unsigned int p_length) {
       if (payload.equals("OFF")) newmode = bitClear(newmode, 3);
       else if (payload.equals("ON")) newmode = bitSet(newmode, 3);
 
-      Q_ovr[3] = newmode;
+      Q_out[3] = newmode;
       state.sent = false;
-    }    
+    }
+
+    lastCharTime = millis() + 100;
   }
 }

@@ -1,6 +1,7 @@
-#define WIFI_SSID ""
-#define WIFI_PASSWORD ""
-#define BROKER "192.168.178.199"
+#define WIFI_SSID "" // YOUR WIFI SSID
+#define WIFI_PASSWORD "" // YOUR WIFI PASSWORD
+#define BROKER "" // YOUR MQTT BROKER IP
+
 
 #define ON String(F("ON")).c_str()
 #define OFF String(F("OFF")).c_str()
@@ -10,7 +11,7 @@
 
 #define ONEWIRE true
 #define SDMETER true
-#define PENKTH000 false // untested
+#define PENKTH000 false // long time no test
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -66,7 +67,6 @@ unsigned long lastEnergy=0;
 #include <CircularBuffer.h>
 CircularBuffer<uint8_t, 20> Q_in;
 uint8_t Q_out[20];
-uint8_t Q_ovr[20];
 uint8_t lastCRC = 0x00;
 
 // Communication management
@@ -78,16 +78,11 @@ struct {
 } state;
 
 void mqtt_reconnect() {
-  int oldstate = mqtt.state();
-
-  // Loop until we're reconnected
   if (!mqtt.connected()) {
     // Attempt to connect
-    if (mqtt.connect(String(String("AWHP") + String(millis())).c_str())) {
+    if (mqtt.connect("AWHP", "AWHP/node", 1, true, "OFF")) {
       mqtt.publish("AWHP/node", "ON", true);
-      mqtt.publish("AWHP/debug", "RECONNECT");
-      mqtt.publish("AWHP/debug", String(millis()).c_str());
-      mqtt.publish("AWHP/debug", String(oldstate).c_str());
+      mqtt.publish("AWHP/node/ip", WiFi.localIP().toString().c_str());
 
       // ... and resubscribe
       mqtt.subscribe("AWHP/command/#");
@@ -100,12 +95,6 @@ void mqtt_reconnect() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void setup() {
-  /*
-  pinMode(TX, INPUT);
-  pinMode(RX, INPUT);
-  delay(10000);
-  */
-  
 #ifdef DBG
   Serial.begin(115200);
   Serial.println(F("AWHP begin"));
@@ -155,10 +144,48 @@ void setup() {
 #endif
 
   D0_Init();
+  state.sent = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// see 99_loop
+void loop() {
+  // WiFi is important
+  if (WiFi.status() != WL_CONNECTED) ESP.restart();
+  if (!mqtt.connected()) mqtt_reconnect();
+  _yield();
+
+  handle_D0();
+
+#if ONEWIRE
+  handle_onewire();
+#endif
+
+  handle_D0();
+
+#if SDMETER
+  if (millis() - lastEnergy  > 2500) {
+    PUB("AWHP/energy/W", String(sdm.readVal(DDM_PHASE_1_POWER), 1).c_str());
+
+    handle_D0();
+
+    PUB("AWHP/energy/kWh", String(sdm.readVal(DDM_IMPORT_ACTIVE_ENERGY), 3).c_str());
+    lastEnergy = millis();
+  }
+#endif
+
+  // Watchdog reset if there is no communication
+  /*
+  if (state.sent == true && ((millis() - lastCharTime) > 60000 || (millis() - lastMsgTime) > 60000)) {
+    wdt_enable(WDTO_15MS);
+    PUB("AWHP/debug", String(F("WDT RESET")).c_str());
+    _yield();
+
+    while (true) {
+      ;;;
+    }
+  }
+  */
+}
 
 ///////////////////////////////////////////////////////////////////////////////

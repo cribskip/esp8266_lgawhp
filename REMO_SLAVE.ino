@@ -1,3 +1,6 @@
+extern void pubMsg_Arr(uint8_t* arr);
+extern void pubMsg_Circ(CircularBuffer<uint8_t, 20> &arr);
+
 void D0_Init() {
 #ifndef DBG
   // AC communication, 300 baud 8N1. TX GPIO15, RX GPIO13
@@ -18,8 +21,8 @@ inline void handle_D0() {
   }
 
   // Send to AWHP if data pending
-  // &&   digitalRead(13) == LOW
-  if (state.sent == false && (millis() - lastCharTime) > 200 && Q_out[19] != 0x00) {
+  //Q_out[19] != 0x00 &&
+  if (state.sent == false && (millis() - lastCharTime) > 100) {
     D0_send_packet();
   }
 }
@@ -39,20 +42,21 @@ inline void D0_Check_RX() {
         //y = x & 0x0F;
         //if (y == 0xA0 || y == 0xC0) {
         Q_in.push(x);
+        //PUB("AWHP/rcv", String(x, HEX).c_str());
       }
 
     } else if (Q_in.size() > 0) Q_in.push(x);
-
     lastCharTime = millis();
   }
 }
 
 inline void D0_handle_recv_packet() {
-  unsigned long sum;
+  unsigned long sum = 0;
   for (uint8_t i = 0; i < 20; i++) sum += Q_in[i];
   if (! isCheckSum(sum, Q_in[19])) {
     Q_in.clear();
     lastCRC = 0x00;
+    //PUB("AWHP/debug", "Not CRC");
     return;
   }
 
@@ -60,9 +64,11 @@ inline void D0_handle_recv_packet() {
     // 20 chars received, remember CRC
     lastCRC = Q_in[19];
     Q_in.clear();
+    //PUB("AWHP/debug", "Dup");
   } else {
     // Received two messages, parse
-    pubMsg(Q_in); // Publish to MQTT
+    PUB("AWHP/debug", "OK");
+    pubMsg_Circ(Q_in); // Publish to MQTT
     lastMsgTime = millis();
 
     // A0 or C0
@@ -108,8 +114,10 @@ inline void D0_handle_recv_packet() {
         PUB("AWHP/DHW", String(Q_in[13]).c_str());
 
         // new valid Message, copy to out
-        for (uint8_t i = 0; i < 20; i++) {
-          Q_out[i] = Q_in[i];
+        if (state.sent) {
+          for (uint8_t i = 0; i < 20; i++) {
+            Q_out[i] = Q_in[i];
+          }
         }
       }
     }
@@ -121,40 +129,32 @@ inline void D0_handle_recv_packet() {
 }
 
 inline void D0_send_packet() {
-  uint8_t x;
+  u8 x;
+
   mqtt.publish("AWHP/debug", String(F("SEND")).c_str());
-  _yield();
+  
+  for (u8 _i = 0; _i<2; _i++) {  
+    yield();
 
-  pubMsg(Q_ovr);
+    // Set bit for sender ID & 'new data indicator'
+    Q_out[0] = 0x20;
+    //bitSet(Q_out[1], 0);
 
-  // Replace data from MQTT
-  {
-    uint8_t i = 0;
-    for (i = 1; i < 19; i++) {
-      x = Q_ovr[i];
-      if (x != 0x00) {
-        Q_out[i] = x;
-        Q_ovr[i] = 0x00;
-      }
+    //pubMsg_Arr(Q_out);
+
+    // Calc CRC for packet
+    Q_out[19] = calcCRC();
+    pubMsg_Arr(Q_out);
+    yield();
+
+    // Push out to AWHP
+    for (uint8_t i = 0; i < 20; i++) {
+      Serial.write(Q_out[i]);
     }
+    Serial.flush();
+    delay(130);
   }
-
-  // Set bit for sender ID & 'new data indicator'
-  Q_out[0] = 0x20;
-  bitSet(Q_out[1], 0);
-
-  // Calc CRC for packet
-  Q_out[19] = calcCRC();
-  pubMsg(Q_out);
-  _yield();
-
-  // Push out to AWHP
-  for (uint8_t i = 0; i < 20; i++) {
-    Serial.write(Q_out[i]);
-  }
-  Serial.flush();
-  _yield();
 
   state.sent = true;
-  Q_out[19] = 0x00;
+  lastCharTime = millis();
 }
