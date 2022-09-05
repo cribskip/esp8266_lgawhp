@@ -2,7 +2,6 @@
 #define WIFI_PASSWORD "" // YOUR WIFI PASSWORD
 #define BROKER "" // YOUR MQTT BROKER IP
 
-
 #define ON String(F("ON")).c_str()
 #define OFF String(F("OFF")).c_str()
 
