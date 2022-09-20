@@ -70,7 +70,19 @@ inline void D0_handle_recv_packet() {
     PUB("AWHP/debug", "OK");
     pubMsg_Circ(Q_in); // Publish to MQTT
     lastMsgTime = millis();
-
+    // C6 01 or C6 03
+    if (Q_in[0] == 0xC6)
+    {
+      if (Q_in[1] == 0x01)
+      {
+        PUB("AWHP/flow", String(Q_in[17]).c_str());   // Waterflow flow/10 in l/min, if flow=5 then flow=0
+      }
+      if (Q_in[1] == 0x03)
+      {
+        PUB("AWHP/pressure", String(Q_in[14]).c_str()); // Waterpressure pressure/10 in bar
+        PUB("AWHP/outside_temp", String(Q_in[16]).c_str());
+      }
+    }  
     // A0 or C0
     if ((Q_in[0] & 0x0F) == 0x00) {
       uint8_t x;
